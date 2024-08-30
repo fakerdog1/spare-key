@@ -1,9 +1,11 @@
 @php
+  /** @var \App\Models\Room\Room $room */
   $fields = [
       'max_persons' => [
           'label' => __('Maximum number of guests'),
           'type' => 'number',
           'placeholder' => __('Enter number'),
+          'value' => old('max_persons') ?? $room->max_persons ?? 0,
       ],
       'price' => [
           'label' => __('Price per night'),
@@ -11,18 +13,22 @@
           'placeholder' => __('Enter price'),
           'step' => '0.01',
           'prepend' => '$',
+          'value' => old('price') ?? $room->price ?? 0,
       ],
       'is_booked' => [
           'label' => __('Room is currently booked'),
           'type' => 'switch',
+          'value' => old('is_booked') ?? $room->is_booked ?? false,
       ],
       'is_private' => [
           'label' => __('Private room'),
           'type' => 'switch',
+          'value' => old('is_private') ?? $room->is_private ?? false,
       ],
       'is_democracy' => [
           'label' => __('Democratic decision-making for guests'),
           'type' => 'switch',
+          'value' => old('is_democracy') ?? $room->is_democracy ?? false,
       ],
   ];
 @endphp
@@ -40,7 +46,7 @@
               type="checkbox"
               class="form-check-input @error($field) is-invalid @enderror"
               name="{{ $field }}"
-              value="1"
+              value={{ $config['value'] }}
               {{ old($field) ? 'checked' : '' }}
             >
             <label class="form-check-label" for="{{ $field }}">{{ $config['label'] }}</label>
@@ -58,7 +64,7 @@
               type="{{ $config['type'] }}"
               class="form-control @error($field) is-invalid @enderror"
               name="{{ $field }}"
-              value="{{ old($field) }}"
+              value={{ $config['value'] }}
               placeholder="{{ $config['placeholder'] }}"
               @if (isset($config['step'])) step="{{ $config['step'] }}" @endif
             required

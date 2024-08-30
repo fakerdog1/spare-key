@@ -1,7 +1,9 @@
 @php
+  /** @var \App\Models\Room\Room $room */
   $field = 'property_url';
   $label = __('Room URL');
   $placeholder = __('Enter the URL of the room');
+  $value = old('property_url') ?? $room->property_url ?? '';
 @endphp
 
 <div class="form-group">
@@ -12,7 +14,7 @@
       type="text"
       class="form-control @error($field) is-invalid @enderror"
       name="{{$field}}"
-      value="{{ old($field) }}"
+      value="{{$value}}"
       placeholder="{{$placeholder}}"
       required
       autofocus

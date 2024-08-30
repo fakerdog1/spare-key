@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CreationController extends Controller
@@ -27,7 +26,7 @@ class CreationController extends Controller
 
         return view('room.create', [
             'step' => $step,
-            'roomData' => $room ? $room->toArray() : [],
+            'room' => $room ?? [],
         ]);
     }
 
@@ -46,7 +45,7 @@ class CreationController extends Controller
         $this->setSessionRoomId($request, $room);
 
         if ($step < 3) {
-            return $this->redirectToStep($step);
+            return $this->redirectToStep($step, $room);
         }
 
         $this->forgetSessionRoomId($request);
@@ -62,9 +61,11 @@ class CreationController extends Controller
         }
 
         return view('room.show', [
-            'room' => $room->load(['users' => function ($query) use ($user) {
-                $query->where('users.id', $user->id);
-            }])
+            'room' => $room->load([
+                'users' => function ($query) use ($user) {
+                    $query->where('users.id', $user->id);
+                },
+            ]),
         ]);
     }
 
@@ -75,7 +76,7 @@ class CreationController extends Controller
      */
     public function checkUserInRoom(
         Room $room,
-        User|Authenticatable|null $user
+        User|Authenticatable|null $user,
     ): bool {
         return $room->users()->where('users.id', $user->id)->exists();
     }
@@ -93,7 +94,8 @@ class CreationController extends Controller
      * @param Request $request
      * @return Room|Collection|Model|null
      */
-    public function getRoom(Request $request): Room|null|Collection|Model {
+    public function getRoom(Request $request): Room|null|Collection|Model
+    {
         $roomId = $this->getSessionRoomId($request);
         return $roomId ? Room::findOrNew($roomId) : new Room();
     }
@@ -107,7 +109,7 @@ class CreationController extends Controller
     public function fillAndSaveRoom(
         Model|Collection|Room|null $room,
         array $validatedData,
-        ?int $step
+        ?int $step,
     ): void {
         $room->fill($validatedData);
         $room->creation_step = $step + 1;
@@ -121,7 +123,7 @@ class CreationController extends Controller
      */
     public function setSessionRoomId(
         Request $request,
-        Model|Collection|Room|null $room
+        Model|Collection|Room|null $room,
     ): void {
         $request->session()->put('room_id', $room->id);
     }
@@ -169,7 +171,7 @@ class CreationController extends Controller
     {
         return $request->validate([
             'date_from' => ['required', 'date'],
-            'date_to' => ['required', 'date']
+            'date_to' => ['required', 'date'],
         ]);
     }
 
@@ -178,7 +180,6 @@ class CreationController extends Controller
      */
     public function invalidStepResponse(): JsonResponse
     {
-        dd('invalid');
         return response()->json(['error' => 'Invalid step'], 400);
     }
 
@@ -186,9 +187,12 @@ class CreationController extends Controller
      * @param int $step
      * @return RedirectResponse
      */
-    public function redirectToStep(int $step): RedirectResponse
+    public function redirectToStep(int $step, ?Room $room): RedirectResponse
     {
-        return redirect()->route('room.create', ['step' => $step + 1]);
+        return redirect()->route(
+            'room.create',
+            ['step' => $step + 1, 'room' => $room]
+        );
     }
 
     /**
@@ -207,7 +211,7 @@ class CreationController extends Controller
      */
     public function getValidatedData(
         int $step,
-        Request $request
+        Request $request,
     ): array|JsonResponse {
         return match ($step) {
             1 => $this->validateRoomDataUrl($request),
