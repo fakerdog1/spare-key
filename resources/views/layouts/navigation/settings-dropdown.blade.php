@@ -17,6 +17,11 @@
       </a>
     </li>
     <li>
+      <a class="dropdown-item" href="{{route('my-room.index')}}">
+        {{ __('My Rooms') }}
+      </a>
+    </li>
+    <li>
       <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="dropdown-item">

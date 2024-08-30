@@ -12,7 +12,7 @@ class ManagementController extends Controller
     public function index() {
         $authUser = auth()->user();
 
-        return view('room.index', [
+        return view('room.my-rooms.index', [
             'rooms' => $authUser->split_rooms,
         ]);
     }
