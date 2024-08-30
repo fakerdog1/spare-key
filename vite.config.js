@@ -7,9 +7,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                // Dynamically get all CSS files
                 ...glob.sync('resources/{css,sass,scss}/**/*.{css,sass,scss}'),
-                // Dynamically get all JS files
                 ...glob.sync('resources/js/**/*.js'),
             ],
             refresh: true,
