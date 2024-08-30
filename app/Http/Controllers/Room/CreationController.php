@@ -86,7 +86,7 @@ class CreationController extends Controller
      */
     public function getCurrentStep(Request $request): int
     {
-        return $request->query('step', 1);
+        return $request->query('step') ?? $request->input('step', 1);
     }
 
     /**
@@ -178,6 +178,7 @@ class CreationController extends Controller
      */
     public function invalidStepResponse(): JsonResponse
     {
+        dd('invalid');
         return response()->json(['error' => 'Invalid step'], 400);
     }
 

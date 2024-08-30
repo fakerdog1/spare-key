@@ -1,0 +1,7 @@
+.thin-progress {
+    height: 10px !important;  /* Adjust this value to make the bar thinner or thicker */
+}
+
+.thin-progress .progress-bar {
+    height: 100%;
+}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-100">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,9 +17,11 @@
     >
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @stack('styles')
   </head>
-  <body>
-    <div class="min-vh-100 bg-light">
+  <body class="d-flex flex-column h-100">
+    <div class="flex-shrink-0">
       @include('layouts.navigation')
 
       @hasSection('header')
@@ -30,11 +32,15 @@
         </header>
       @endif
 
-      <main>
+      <main class="flex-grow-1">
         @yield('content')
       </main>
     </div>
 
-  <!-- Bootstrap JS -->
+    @hasSection('footer')
+      <footer class="footer mt-auto bg-light">
+        @yield('footer')
+      </footer>
+    @endif
   </body>
 </html>
