@@ -1,3 +1,7 @@
+@php
+    /** @var \App\Models\Room\Room $room */
+@endphp
+
 <div class="card mb-3">
   <div class="card-body">
     <div class="row">
