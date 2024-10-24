@@ -17,6 +17,8 @@ use Illuminate\Support\Str;
  * @mixin Builder
  * @property int $id
  * @property int $room_id
+ * @property int $inviter_id
+ * @property int $invitee_id
  * @property string $email
  * @property string $token
  * @property string $expires_at
@@ -64,6 +66,10 @@ class Invitation extends Model
         return $this->belongsTo(User::class, 'inviter_id');
     }
 
+    public function invitee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'invitee_id');
+    }
 
 
     // Attributes
