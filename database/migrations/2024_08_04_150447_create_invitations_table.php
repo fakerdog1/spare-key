@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->timestamp('expires_at');
             $table->timestamp('accepted_at')->nullable();
+            $table->boolean('is_active')->default(true);
 
             $table->timestamps();
         });

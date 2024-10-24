@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Room\Invitation;
 use App\Models\Room\Room;
 use App\Models\Room\WaitingRoom;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -94,6 +96,16 @@ class User extends Authenticatable
     public function rooms(): BelongsToMany
     {
         return $this->belongsToMany(Room::class)->withPivot('role');
+    }
+
+    public function invitations(): HasMany|Invitation
+    {
+        return $this->hasMany(Invitation::class, 'invitee_id');
+    }
+
+    public function sentInvitations(): HasMany|Invitation
+    {
+        return $this->hasMany(Invitation::class, 'inviter_id');
     }
 
     /**

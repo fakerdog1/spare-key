@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 /**
@@ -23,6 +24,7 @@ use Illuminate\Support\Str;
  * @property string $token
  * @property string $expires_at
  * @property string $accepted_at
+ * @property bool $is_active
  * @property string $created_at
  * @property string $updated_at
  * @property bool $is_expired
@@ -32,23 +34,26 @@ use Illuminate\Support\Str;
  * @property string $invitation_link
  * @property Room $room
  * @property User $inviter
+ * @property User $invitee
  *
- * @method static Invitation create(array $array)
- * @method static Builder pending()
- * @method static Builder expired()
- * @method static Builder accepted()
+ * @method self|Builder pending()
+ * @method self|Builder expired()
+ * @method self|Builder accepted()
  *
  */
 class Invitation extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'room_id',
+        'inviter_id',
+        'invitee_id',
         'email',
         'token',
         'expires_at',
         'accepted_at',
+        'is_active',
     ];
 
     protected $casts = [
@@ -141,6 +146,14 @@ class Invitation extends Model
      */
     public function accept(): void
     {
+        if (!auth()->user() || auth()->user()->email !== $this->email) {
+            throw new Exception('You are not authorized to accept this invitation.');
+        }
+
+        if (!$this->is_active) {
+            throw new Exception('This invitation has been canceled.');
+        }
+
         if ($this->is_expired) {
             throw new Exception('This invitation has expired.');
         }
@@ -149,6 +162,19 @@ class Invitation extends Model
             throw new Exception('This invitation has already been accepted.');
         }
 
-        $this->update(['accepted_at' => now()]);
+        $this->update([
+            'invitee_id' => auth()->id(),
+            'accepted_at' => now()
+        ]);
+    }
+
+    public function decline(): void
+    {
+        $this->update(['is_active' => false]);
+    }
+
+    public function cancel(): void
+    {
+        $this->update(['is_active' => false]);
     }
 }

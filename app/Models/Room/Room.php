@@ -120,7 +120,7 @@ class Room extends Model
             ->withTimestamps();
     }
 
-    public function invitations(): HasMany
+    public function invitations(): HasMany|Invitation
     {
         return $this->hasMany(Invitation::class);
     }
