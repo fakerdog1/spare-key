@@ -1,4 +1,4 @@
-@props(['active', 'href', 'text'])
+@props(['active'])
 
 @php
   $classes = ($active ?? false)
@@ -6,6 +6,6 @@
               : 'nav-link';
 @endphp
 
-<a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
-  {{ $text }}
+<a {{ $attributes->merge(['class' => $classes]) }}>
+  {{ $slot }}
 </a>

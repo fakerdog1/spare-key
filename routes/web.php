@@ -5,9 +5,7 @@ use App\Http\Controllers\Room\CreationController;
 use App\Http\Controllers\Room\ManagementController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\Room\SearchController::class, 'index']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');

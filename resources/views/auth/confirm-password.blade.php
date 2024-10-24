@@ -1,7 +1,5 @@
-@extends('layouts.guest')
-
-@section('content')
-  <div class="mb-4 small text-muted">
+<x-guest-layout>
+  <div class="mb-4 small text-secondary">
     {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
   </div>
 
@@ -10,29 +8,20 @@
 
     <!-- Password -->
     <div class="mb-3">
-      <label for="password" class="form-label">
-        {{ __('Password') }}
-      </label>
+      <x-input-label for="password" :value="__('Password')" />
 
-      <input id="password"
-        class="form-control @error('password') is-invalid @enderror"
+      <x-text-input id="password" class="form-control"
         type="password"
         name="password"
-        required
-        autocomplete="current-password"
-      >
+        required autocomplete="current-password" />
 
-      @error('password')
-      <div class="invalid-feedback">
-        {{ $message }}
-      </div>
-      @enderror
+      <x-input-error :messages="$errors->get('password')" class="mt-2" />
     </div>
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-      <button type="submit" class="btn btn-primary text-uppercase">
+    <div class="d-flex justify-content-end mt-4">
+      <x-primary-button class="btn btn-primary">
         {{ __('Confirm') }}
-      </button>
+      </x-primary-button>
     </div>
   </form>
-@endsection
+</x-guest-layout>

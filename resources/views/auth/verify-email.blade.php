@@ -1,12 +1,10 @@
-@extends('layouts.guest')
-
-@section('content')
-  <div class="mb-4 small text-muted">
+<x-guest-layout>
+  <div class="mb-4 small text-secondary">
     {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
   </div>
 
-  @if(session('status') == 'verification-link-sent')
-    <div class="alert alert-success mb-4" role="alert">
+  @if (session('status') == 'verification-link-sent')
+    <div class="mb-4 fw-medium small text-success">
       {{ __('A new verification link has been sent to the email address you provided during registration.') }}
     </div>
   @endif
@@ -16,18 +14,18 @@
       @csrf
 
       <div>
-        <button type="submit" class="btn btn-primary text-uppercase">
+        <x-primary-button class="btn btn-primary">
           {{ __('Resend Verification Email') }}
-        </button>
+        </x-primary-button>
       </div>
     </form>
 
     <form method="POST" action="{{ route('logout') }}">
       @csrf
 
-      <button type="submit" class="btn btn-link text-decoration-underline p-0">
+      <button type="submit" class="btn btn-link text-decoration-none">
         {{ __('Log Out') }}
       </button>
     </form>
   </div>
-@endsection
+</x-guest-layout>
