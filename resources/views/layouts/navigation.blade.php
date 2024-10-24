@@ -1,4 +1,5 @@
 @php
+  $createRoomRoute = route('room.create');
   $dashboardRoute = route('dashboard');
   $profileEditRoute = route('profile.edit');
   $logoutRoute = route('logout');
@@ -23,6 +24,11 @@
           </x-nav-link>
         </li>
       </ul>
+      <div>
+        <a href="{{$createRoomRoute}}" class="btn btn-danger">
+          Create Room
+        </a>
+      </div>
       <div class="d-flex">
         <div class="dropdown">
           <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">

@@ -2,6 +2,7 @@
   <div class="container py-5">
     <div class="row">
       @foreach($rooms as $room)
+        @php /** @var \App\Models\Room\Room $room */ @endphp
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-sm">
             <!-- Room Image -->
@@ -27,8 +28,7 @@
             </div>
 
             <div class="card-footer bg-white border-top-0">
-{{--              <a href="{{ route('rooms.show', $room->id) }}" class="btn btn-primary w-100">View Details</a>--}}
-              <a href="#" class="btn btn-primary w-100">View Details</a>
+              <a href="{{ route('rooms.show', $room->id) }}" class="btn btn-primary w-100">View Details</a>
             </div>
           </div>
         </div>

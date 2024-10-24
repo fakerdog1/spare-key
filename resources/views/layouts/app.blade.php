@@ -13,6 +13,8 @@
 
   <!-- Scripts and Styles -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+  @stack('styles')
 </head>
 <body>
 <div id="app">
@@ -31,6 +33,10 @@
   <main>
     {{ $slot }}
   </main>
+
+  <footer class="position-fixed bottom-0 w-100">
+    @yield('footer')
+  </footer>
 </div>
 </body>
 </html>

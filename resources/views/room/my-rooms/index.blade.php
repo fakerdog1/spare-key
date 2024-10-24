@@ -1,15 +1,13 @@
-@extends('layouts.app')
+<x-app-layout>
+  @php
+    $roomTypes = [
+      'ownedRooms' => 'Owned Rooms',
+      'adminRooms' => 'Admin Rooms',
+      'guestRooms' => 'Guest Rooms',
+      'waitingRooms' => 'Waiting Rooms',
+    ];
+  @endphp
 
-@php
-  $roomTypes = [
-    'ownedRooms' => 'Owned Rooms',
-    'adminRooms' => 'Admin Rooms',
-    'guestRooms' => 'Guest Rooms',
-    'waitingRooms' => 'Waiting Rooms',
-  ];
-@endphp
-
-@section('content')
   <div class="container py-4">
     <h1 class="mb-3">My Rooms</h1>
 
@@ -21,4 +19,4 @@
       @endforeach
     </div>
   </div>
-@endsection
+</x-app-layout>

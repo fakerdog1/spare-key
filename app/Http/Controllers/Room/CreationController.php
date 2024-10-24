@@ -57,7 +57,7 @@ class CreationController extends Controller
         $user = auth()->user();
         $userInRoom = $this->checkUserInRoom($room, $user);
         if (!$userInRoom) {
-            throw new NotFoundHttpException('Room not found');
+            return redirect('/');
         }
 
         return view('room.show', [
