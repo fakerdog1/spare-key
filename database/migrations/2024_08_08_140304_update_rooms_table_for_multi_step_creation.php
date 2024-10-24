@@ -28,12 +28,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('rooms', function (Blueprint $table) {
-            $table->string('property_url')->nullable(false)->change();
-            $table->integer('max_persons')->nullable(false)->change();
-            $table->float('price')->nullable(false)->change();
-            $table->float('total_price')->nullable(false)->change();
-            $table->dateTime('date_from')->nullable(false)->change();
-            $table->dateTime('date_to')->nullable(false)->change();
             $table->dropColumn('creation_step');
         });
     }

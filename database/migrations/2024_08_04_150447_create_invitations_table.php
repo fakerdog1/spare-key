@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->foreignId('room_id')->constrained();
             $table->foreignId('inviter_id')->constrained('users');
+            $table->foreignId('invitee_id')->nullable()->constrained('users');
 
             $table->string('email');
             $table->string('token')->unique();
