@@ -39,6 +39,7 @@ use Illuminate\Support\Str;
  * @method self|Builder pending()
  * @method self|Builder expired()
  * @method self|Builder accepted()
+ * @method self|Builder notAccepted()
  *
  */
 class Invitation extends Model
@@ -120,6 +121,11 @@ class Invitation extends Model
     public function scopeExpired($query)
     {
         return $query->where('expires_at', '<=', now());
+    }
+
+    public function scopeNotAccepted($query)
+    {
+        return $query->whereNull('accepted_at');
     }
 
     public function scopeAccepted($query)

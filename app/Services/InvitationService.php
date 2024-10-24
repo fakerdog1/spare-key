@@ -54,6 +54,11 @@ class InvitationService
         return Invitation::where('email', $email)->firstOrFail();
     }
 
+    public function cleanupExpiredInvitations(): void
+    {
+        Invitation::expired()->notAccepted()->delete();
+    }
+
 
 
     // User specific methods
