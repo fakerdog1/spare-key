@@ -28,7 +28,7 @@
             </div>
 
             <div class="card-footer bg-white border-top-0">
-              <a href="{{ route('rooms.show', $room->id) }}" class="btn btn-primary w-100">View Details</a>
+              <a href="{{ route('room.show', $room->id) }}" class="btn btn-primary w-100">View Details</a>
             </div>
           </div>
         </div>

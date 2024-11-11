@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Room;
 
 use App\Http\Controllers\Controller;
 use App\Models\Room\Room;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class SearchController extends Controller
 {
@@ -16,10 +19,10 @@ class SearchController extends Controller
         $this->request = $request;
     }
 
-    public function index()
+    public function index(): View
     {
         $rooms = new Room();
-        $rooms = $rooms->where('date_from', '<=', now())
+        $rooms = $rooms->where('date_from', '>=', now())
             ->where('date_to', '>=', now())
             ->get()
             ->filter(function ($room) {

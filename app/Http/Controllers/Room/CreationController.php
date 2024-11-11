@@ -6,16 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Room\Room;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CreationController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request): View|RedirectResponse
     {
         $room = $this->getCreateRoom($request);
         $step = $this->getCurrentStep($request);
@@ -30,7 +34,7 @@ class CreationController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $step = $this->getCurrentStep($request);
         $room = $this->getRoom($request);
@@ -52,7 +56,7 @@ class CreationController extends Controller
         return redirect()->route('room.show', $room);
     }
 
-    public function show(Room $room)
+    public function show(Room $room): View|RedirectResponse
     {
         $user = auth()->user();
         $userInRoom = $this->checkUserInRoom($room, $user);
