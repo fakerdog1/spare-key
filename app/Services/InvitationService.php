@@ -16,10 +16,13 @@ use Illuminate\Support\Str;
 class InvitationService
 {
     protected ?Invitation $invitation;
+    protected ?string $token;
 
-    public function __construct(?Invitation $invitation = null)
-    {
-        $this->invitation = $invitation;
+    public function __construct(
+        ?Invitation $invitation = null,
+        ?string $token = null,
+    ) {
+        $this->invitation = $invitation ?? $this->findByToken($token);
     }
 
     /**
@@ -31,19 +34,34 @@ class InvitationService
     }
 
     // General methods
-    public function invite(?User $user, Room $room, string $email): void
-    {
+    public function invite(
+        ?User $user,
+        Room $room,
+        ?string $type = Invitation::TYPE_GROUP,
+        ?string $email = null,
+    ): void {
+        if (!Invitation::typeIsValid($type)) {
+            $type = Invitation::TYPE_GROUP;
+        }
+
+        $userEmail = $user?->email ?? $email;
+        $invitationEmail = $type === Invitation::TYPE_PERSONAL ? $userEmail : null;
+        $maxUseCount = $type === Invitation::TYPE_PERSONAL ? 1 : $room->max_persons; // TODO change here to calculate the max available number of users
+
         $invitation = $room->invitations()->create([
             'inviter_id' => auth()->id(),
             'invitee_id' => $user?->id,
-            'email' => $user?->email ?? $email,
+            'type' => $type,
+            'email' => $invitationEmail,
             'token' => Str::random(32),
+            'max_use_count' => $maxUseCount,
             'expires_at' => now()->addHours(2),
         ]);
 
         $this->setInvitation($invitation);
+        $acceptUrl = route('invitation.accept', ['token' => $invitation->token]);
 
-        // Send email with the invitation link
+        // TODO: Send email with the invitation link
         // Create notification to invitee if profile exists
     }
 
@@ -62,11 +80,30 @@ class InvitationService
     public function acceptInvite(): void
     {
         $this->invitation?->accept();
+        $this->invitation->room->users()->attach(
+            auth()->id(),
+            [
+                'role' => 'guest',
+                'invitation_id' => $this->invitation->id,
+            ]
+        );
     }
 
-    public function findByToken(string $token): Invitation
+    /**
+     * @throws Exception
+     */
+    public function declineInvite(): void
     {
-        return Invitation::where('token', $token)->firstOrFail();
+        $this->invitation?->decline();
+    }
+
+    public function findByToken(?string $token): ?Invitation
+    {
+        if (!$token) {
+            return null;
+        }
+
+        return Invitation::where('token', $token)->first();
     }
 
     public function findByEmail(string $email): Invitation
@@ -82,6 +119,7 @@ class InvitationService
 
 
     // User specific methods
+
     /**
      * @param User $user
      * @return Invitation[]|Collection
@@ -103,6 +141,7 @@ class InvitationService
 
 
     // Room specific methods
+
     /**
      * @param Room $room
      * @return Invitation[]|Collection
@@ -120,7 +159,6 @@ class InvitationService
     {
         return $room->invitations()->pending()->get();
     }
-
 
 
     // Protected methods

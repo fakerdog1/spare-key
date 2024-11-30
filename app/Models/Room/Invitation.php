@@ -21,7 +21,10 @@ use Illuminate\Support\Str;
  * @property int $inviter_id
  * @property int $invitee_id
  * @property string $email
+ * @property string $type
  * @property string $token
+ * @property int $max_use_count
+ * @property int $use_count
  * @property string $expires_at
  * @property string $accepted_at
  * @property bool $is_active
@@ -44,14 +47,18 @@ use Illuminate\Support\Str;
  */
 class Invitation extends Model
 {
-    use SoftDeletes;
+    public const TYPE_PERSONAL = 'personal';
+    public const TYPE_GROUP = 'group';
 
     protected $fillable = [
         'room_id',
         'inviter_id',
         'invitee_id',
         'email',
+        'type',
         'token',
+        'max_use_count',
+        'use_count',
         'expires_at',
         'accepted_at',
         'is_active',
@@ -98,9 +105,11 @@ class Invitation extends Model
     {
         if ($this->is_accepted) {
             return 'accepted';
-        } elseif ($this->is_expired) {
+        }
+        else if ($this->is_expired) {
             return 'expired';
-        } else {
+        }
+        else {
             return 'pending';
         }
     }
@@ -111,11 +120,14 @@ class Invitation extends Model
     }
 
 
-
     // Scopes
     public function scopePending($query)
     {
-        return $query->whereNull('accepted_at')->where('expires_at', '>', now());
+        return $query->whereNull('accepted_at')->where(
+            'expires_at',
+            '>',
+            now()
+        );
     }
 
     public function scopeExpired($query)
@@ -132,7 +144,6 @@ class Invitation extends Model
     {
         return $query->whereNotNull('accepted_at');
     }
-
 
 
     // Methods
@@ -152,7 +163,14 @@ class Invitation extends Model
      */
     public function accept(): void
     {
-        if (!auth()->user() || auth()->user()->email !== $this->email) {
+        $userInvalid = !auth()->user();
+        if ($userInvalid) {
+            throw new Exception(
+                'You are not authorized to accept this invitation.'
+            );
+        }
+
+        if ($this->type === self::TYPE_PERSONAL && $this->email !== auth()->user()->email) {
             throw new Exception('You are not authorized to accept this invitation.');
         }
 
@@ -169,18 +187,66 @@ class Invitation extends Model
         }
 
         $this->update([
-            'invitee_id' => auth()->id(),
-            'accepted_at' => now()
+            'invitee_id' => $this->invitee_id ?? auth()->id(),
+            'accepted_at' => $this->type === self::TYPE_PERSONAL ? now() : null,
+            'is_active' => !($this->type === self::TYPE_PERSONAL),
+            'use_count' => $this->use_count + 1,
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function decline(): void
     {
+        if ($this->type === self::TYPE_GROUP) {
+            return;
+        }
+
+        if (!auth()->user() || $this->email !== auth()->user()->email) {
+            throw new Exception(
+                'You are not authorized to decline this invitation.'
+            );
+        }
+
+        if ($this->is_accepted) {
+            throw new Exception('This invitation has already been accepted.');
+        }
+
+        if (!$this->is_active) {
+            throw new Exception('This invitation has been canceled.');
+        }
+
+        if ($this->is_expired) {
+            throw new Exception('This invitation has expired.');
+        }
+
         $this->update(['is_active' => false]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function cancel(): void
     {
+        if (!auth()->user()) {
+            throw new Exception('Not authorized');
+        }
+
+        $isRoomOwner = $this->room->owner->id === auth()->id();
+        $isInviter = $this->inviter_id === auth()->id();
+
+        if (!$isRoomOwner && !$isInviter) {
+            throw new Exception('Not authorized');
+        }
         $this->update(['is_active' => false]);
+    }
+
+    public static function typeIsValid(string $type): bool
+    {
+        return in_array($type, [
+            self::TYPE_PERSONAL,
+            self::TYPE_GROUP,
+        ]);
     }
 }

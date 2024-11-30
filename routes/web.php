@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Room\CreationController;
 use App\Http\Controllers\Room\ManagementController;
@@ -21,6 +22,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/room/{room}', [CreationController::class, 'show'])->name('room.show');
 
     Route::get('/my-rooms', [ManagementController::class, 'index'])->name('my-room.index');
+
+    Route::get('invitation/create', [InvitationController::class, 'create'])->name('invitation.create');
+    Route::post('invite', [InvitationController::class, 'invitePerson'])->name('invite.person');
+    Route::post('invite-link', [InvitationController::class, 'inviteGroup'])->name('invite.group');
+
+    Route::get('invitation/accept', [InvitationController::class, 'accept'])->name('invitation.accept');
+    Route::get('invitation/decline', [InvitationController::class, 'decline'])->name('invitation.decline');
+    Route::get('invitation/cancel', [InvitationController::class, 'cancel'])->name('invitation.cancel');
 });
 
 require __DIR__.'/auth.php';
