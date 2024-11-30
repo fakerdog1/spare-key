@@ -15,6 +15,21 @@ use Illuminate\Support\Str;
  */
 class InvitationService
 {
+    protected ?Invitation $invitation;
+
+    public function __construct(?Invitation $invitation = null)
+    {
+        $this->invitation = $invitation;
+    }
+
+    /**
+     * @return Invitation|null
+     */
+    public function getInvitation(): ?Invitation
+    {
+        return $this->invitation;
+    }
+
     // General methods
     public function invite(?User $user, Room $room, string $email): void
     {
@@ -26,22 +41,27 @@ class InvitationService
             'expires_at' => now()->addHours(2),
         ]);
 
+        $this->setInvitation($invitation);
+
         // Send email with the invitation link
         // Create notification to invitee if profile exists
-    }
-
-    public function cancelInvite(Invitation $invitation): void
-    {
-        $invitation->cancel();
-        $invitation->delete();
     }
 
     /**
      * @throws Exception
      */
-    public function acceptInvite(Invitation $invitation): void
+    public function cancelInvite(): void
     {
-        $invitation->accept();
+        $this->invitation?->cancel();
+        $this->invitation?->delete();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function acceptInvite(): void
+    {
+        $this->invitation?->accept();
     }
 
     public function findByToken(string $token): Invitation
@@ -99,5 +119,13 @@ class InvitationService
     public function getPendingSentForRoom(Room $room): Invitation|Collection
     {
         return $room->invitations()->pending()->get();
+    }
+
+
+
+    // Protected methods
+    protected function setInvitation(Invitation $invitation): void
+    {
+        $this->invitation = $invitation;
     }
 }
