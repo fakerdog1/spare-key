@@ -186,6 +186,10 @@ class Invitation extends Model
             throw new Exception('This invitation has already been accepted.');
         }
 
+        if ($this->room->users->contains(auth()->id())) {
+            throw new Exception('You are already a member of this room.');
+        }
+
         $this->update([
             'invitee_id' => $this->invitee_id ?? auth()->id(),
             'accepted_at' => $this->type === self::TYPE_PERSONAL ? now() : null,
@@ -233,7 +237,7 @@ class Invitation extends Model
             throw new Exception('Not authorized');
         }
 
-        $isRoomOwner = $this->room->owner->id === auth()->id();
+        $isRoomOwner = $this->room->owner->first()->id === auth()->id();
         $isInviter = $this->inviter_id === auth()->id();
 
         if (!$isRoomOwner && !$isInviter) {
