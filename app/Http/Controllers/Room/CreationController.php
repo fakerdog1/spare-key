@@ -28,7 +28,7 @@ class CreationController extends Controller
             return redirect()->route('room.create');
         }
 
-        return view('room.create', [
+        return view('room.create.create', [
             'step' => $step,
             'room' => $room ?? [],
         ]);
@@ -64,7 +64,7 @@ class CreationController extends Controller
             return redirect('/');
         }
 
-        return view('room.show', [
+        return view('room.show.show', [
             'room' => $room->load([
                 'users' => function ($query) use ($user) {
                     $query->where('users.id', $user->id);

@@ -23,12 +23,12 @@
       @csrf
       <input type="hidden" name="step" value="{{ $step }}">
 
-      @include("room.steps.$key")
+      @include("room.create.steps.$key")
     </form>
   </div>
 
   @section('footer')
-    @include('room.partials.footer', [
+    @include('room.create.partials.footer', [
       'step' => $step,
       'totalSteps' => $totalSteps,
       'progress' => $progress

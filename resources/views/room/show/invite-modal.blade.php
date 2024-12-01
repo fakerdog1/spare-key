@@ -1,0 +1,1 @@
+<invite-modal :post-url="`{{ route('invite.person') }}`"></invite-modal>
