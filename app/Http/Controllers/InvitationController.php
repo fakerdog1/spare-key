@@ -50,6 +50,33 @@ class InvitationController extends Controller
         ]);
     }
 
+    public function inviteMultiplePerson(Request $request)
+    {
+        $validatedData = $request->validate([
+            'room_id' => 'required|integer|exists:rooms,id',
+            'invitee_emails' => 'required|array',
+            'invitee_emails.*' => 'email',
+        ]);
+
+        $room = $this->getRoom($validatedData);
+        $inviteeEmails = $validatedData['invitee_emails'];
+
+
+        foreach ($inviteeEmails as $email) {
+            $invitee = User::where('email', $email)->first();
+            $this->invitationService->invite(
+                $invitee,
+                $room,
+                'personal',
+                $email
+            );
+        }
+
+        return response()->json([
+            'message' => 'Invitations sent successfully',
+        ]);
+    }
+
     public function inviteGroup(Request $request)
     {
         $validatedData = $request->validate([
@@ -75,7 +102,8 @@ class InvitationController extends Controller
         ]);
 
         $invitation = $this->getInvitation($validatedData);
-        $invitationService = new InvitationService($invitation, $validatedData['token']);
+        $invitationService =
+            new InvitationService($invitation, $validatedData['token']);
         $invitationService->acceptInvite();
 
         return response()->json([
@@ -94,7 +122,8 @@ class InvitationController extends Controller
         ]);
 
         $invitation = $this->getInvitation($validatedData);
-        $invitationService = new InvitationService($invitation, $validatedData['token']);
+        $invitationService =
+            new InvitationService($invitation, $validatedData['token']);
         $invitationService->declineInvite();
 
         return response()->json([
@@ -113,7 +142,8 @@ class InvitationController extends Controller
         ]);
 
         $invitation = $this->getInvitation($validatedData);
-        $invitationService = new InvitationService($invitation, $validatedData['token']);
+        $invitationService =
+            new InvitationService($invitation, $validatedData['token']);
         $invitationService->cancelInvite();
 
         return response()->json([

@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('invitation/create', [InvitationController::class, 'create'])->name('invitation.create');
     Route::post('invite', [InvitationController::class, 'invitePerson'])->name('invite.person');
+    Route::post('invite-multiple', [InvitationController::class, 'inviteMultiplePerson'])->name('invite.multiple');
     Route::post('invite-link', [InvitationController::class, 'inviteGroup'])->name('invite.group');
 
     Route::get('invitation/accept', [InvitationController::class, 'accept'])->name('invitation.accept');

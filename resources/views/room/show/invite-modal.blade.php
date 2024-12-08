@@ -1,4 +1,5 @@
 <invite-modal
-  :post-url="`{{ route('invite.person') }}`"
+  :invite-group-url="`{{ route('invite.group') }}`"
+  :invite-personal-url="`{{ route('invite.multiple') }}`"
   :search-url="`{{ route('api.user.search') }}`">
 </invite-modal>

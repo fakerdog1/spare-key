@@ -27,7 +27,7 @@
         </div>
         <div class="modal-body">
           <div class="group-invite-field">
-            <copy-link-input-field :url="$props.postUrl"/>
+            <copy-link-input-field :url="$props.inviteGroupUrl"/>
           </div>
           <div class="personal-invite-field">
             <auto-complete
@@ -86,7 +86,11 @@ export default defineComponent({
     AutoComplete,
   },
   props: {
-    postUrl: {
+    inviteGroupUrl: {
+      type: String,
+      required: true
+    },
+    invitePersonalUrl: {
       type: String,
       required: true
     },
@@ -147,7 +151,7 @@ export default defineComponent({
     };
 
     const sendInvites = () => {
-      console.log('Sending invites to:', selectedUsers.value);
+      const invitePersonalUrl = props.invitePersonalUrl;
     };
 
     const debouncedFetchUsers = debounce(fetchUsers, 200);
