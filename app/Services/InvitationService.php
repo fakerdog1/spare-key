@@ -48,6 +48,14 @@ class InvitationService
         $invitationEmail = $type === Invitation::TYPE_PERSONAL ? $userEmail : null;
         $maxUseCount = $type === Invitation::TYPE_PERSONAL ? 1 : $room->max_persons; // TODO change here to calculate the max available number of users
 
+        if ($invitationEmail === auth()->user()?->email) {
+            return;
+        }
+
+        if ($room->invitations()->where('email', $invitationEmail)->exists()) {
+            return;
+        }
+
         $invitation = $room->invitations()->create([
             'inviter_id' => auth()->id(),
             'invitee_id' => $user?->id,
