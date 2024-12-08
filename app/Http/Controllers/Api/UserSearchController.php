@@ -12,6 +12,7 @@ class UserSearchController extends Controller
     {
         $user = $request->query('search');
         $users = User::query()
+            ->where('id', '!=', auth()->id())
             ->where('name', 'like', "%$user%")
             ->orWhere('email', 'like', "%$user%")
             ->select('name', 'email')

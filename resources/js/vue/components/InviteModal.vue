@@ -86,6 +86,10 @@ export default defineComponent({
     AutoComplete,
   },
   props: {
+    roomId: {
+      type: Number,
+      required: true
+    },
     inviteGroupUrl: {
       type: String,
       required: true
@@ -151,7 +155,14 @@ export default defineComponent({
     };
 
     const sendInvites = () => {
-      const invitePersonalUrl = props.invitePersonalUrl;
+      console.log('Sending invites:', selectedUsers.value);
+      const result = axios.post(props.invitePersonalUrl, {
+        room_id: props.roomId,
+        invitees: selectedUsers.value
+      });
+
+      const modal = new bootstrap.Modal(document.getElementById('inviteModal'));
+      modal.hide();
     };
 
     const debouncedFetchUsers = debounce(fetchUsers, 200);

@@ -73,7 +73,7 @@ class InvitationController extends Controller
                     return $query->where('email', $email);
                 })
                 ->first();
-            
+
             $this->invitationService->invite(
                 $inviteeUser,
                 $room,
