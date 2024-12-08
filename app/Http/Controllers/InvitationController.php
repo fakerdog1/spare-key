@@ -54,18 +54,28 @@ class InvitationController extends Controller
     {
         $validatedData = $request->validate([
             'room_id' => 'required|integer|exists:rooms,id',
-            'invitee_emails' => 'required|array',
-            'invitee_emails.*' => 'email',
+            'invitees' => 'required|array',
         ]);
 
         $room = $this->getRoom($validatedData);
-        $inviteeEmails = $validatedData['invitee_emails'];
+        $invitees = $validatedData['invitees'];
 
 
-        foreach ($inviteeEmails as $email) {
-            $invitee = User::where('email', $email)->first();
+        foreach ($invitees as $invitee) {
+            $name = data_get($invitee, 'name');
+            $email = data_get($invitee, 'email');
+
+            $inviteeUser = (new User())
+                ->when($name, function ($query) use ($name) {
+                    return $query->where('name', $name);
+                })
+                ->when($email, function ($query) use ($email) {
+                    return $query->where('email', $email);
+                })
+                ->first();
+            
             $this->invitationService->invite(
-                $invitee,
+                $inviteeUser,
                 $room,
                 'personal',
                 $email
